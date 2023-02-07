@@ -26,10 +26,6 @@ const TaskSchema = new mongoose.Schema({
         type: Date,
         required:[false,"A Task Must Have A Date"]
     }
-},
-{
-    timestamps: true,
-    toJSON: {virtuals: true}
 }
 )
 

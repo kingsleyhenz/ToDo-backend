@@ -36,22 +36,19 @@ export const addTask = async (req, res) => {
   }
 } 
 
-export const getTasks = async (req, res) => {
-    try{
-        const tasks = await Task.find({ user: req.userAuth });
-        if(tasks.length > 0){res.json({status: "success", data: tasks})
-      }else{
-      res.json({status: "error", message: "No Tasks Found"})
-        }
-      }catch(error){
-        console.log(error);
-      res.json({status: "error", message: "An error occured"
-      })
-      }
+export const allTasks = async (req, res) => {
+  try {
+    const tasks = await Task.find({ user: req.userAuth });
+    if (tasks.length > 0) {
+      res.json({ status: "success", data: tasks });
+    } else {
+      res.json({ status: "error", message: "No Tasks Found" });
+    }
+  } catch (error) {
+    console.log(error);
+    res.json({ status: "error", message: "An error occured" });
   }
-
-
-
+};
 
 export const updateTask = async(req, res) => {
   try{
@@ -74,5 +71,22 @@ export const updateTask = async(req, res) => {
           status: "error",
           message: "An error occured"
       })
+  }
+}
+
+
+export const deleteTask = async(req, res) => {
+  try{
+     await Task.findByIdAndDelete(req.params.id)
+     res.json({
+         status: "success",
+         message: "Deleted Successfully"
+     })
+
+  }catch(error){
+     res.json({
+         status: "error",
+         message: "An error occured"
+     })
   }
 }

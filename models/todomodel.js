@@ -25,6 +25,11 @@ const TaskSchema = new mongoose.Schema({
     endDate:{
         type: Date,
         required:[false,"A Task Must Have A Date"]
+    },
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true
     }
 }
 )

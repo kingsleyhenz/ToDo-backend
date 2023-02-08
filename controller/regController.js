@@ -62,3 +62,24 @@ export const Login = async(req, res) => {
       })
   }
 }
+
+
+export const getUser = async(req, res) => {
+    try{
+        console.log(req.userAuth);
+        const foundUser = await Users.findById(req.userAuth);
+        if(foundUser){
+            res.json({
+                status: "Success",
+                data: {foundUser}
+            });
+        }else{
+            res.json({
+                status: "Success",
+                message: "User does not exist"
+            });
+        }
+    }catch(error){
+        res.json(error.message)
+    }
+}

@@ -14,7 +14,7 @@ export const addTask = async (req, res) => {
             status,
             startDate,
             endDate,
-            user: req.userAuth
+            user: req.userAuth,
           })
 
           res.json({
@@ -38,7 +38,7 @@ export const addTask = async (req, res) => {
 
 export const allTasks = async (req, res) => {
   try {
-    const tasks = await Task.find({ user: req.userAuth });
+    const tasks = await Task.find({ user: req.userAuth._id });
     if (tasks.length > 0) {
       res.json({ status: "success", data: tasks });
     } else {

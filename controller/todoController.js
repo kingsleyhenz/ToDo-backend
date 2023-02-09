@@ -14,7 +14,7 @@ export const addTask = async (req, res) => {
             status,
             startDate,
             endDate,
-            user: req.userAuth,
+            user: req.userAuth._id
           })
 
           res.json({

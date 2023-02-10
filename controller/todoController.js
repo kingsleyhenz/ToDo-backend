@@ -5,7 +5,7 @@ import Task from "../models/todomodel.js";
 export const addTask = async (req, res) => {
   const {head, item, category, status, startDate, endDate} = req.body;
   try{
-      const foundTask = await Task.findOne({item, user: req.userAuth._id})
+      const foundTask = await Task.findOne({user: req.userAuth._id})
       if(!foundTask){
           const task = await Task.create({
             head,

@@ -38,11 +38,12 @@ export const addTask = async (req, res) => {
 
 export const allTasks = async (req, res) => {
   try {
-    const tasks = await Task.find();
-    const userTasks = tasks.filter(tasks => tasks.user == req.userAuth._id);
+    console.log(req.userAuth)
+    const tasks = await Task.find({user: req.userAuth});
+
     res.json({
       status: "success",
-      data: userTasks
+      data: tasks
     });
   } catch (error) {
     console.log(error);

@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import Reg from "./models/Reg.js";
 
 
 const TaskSchema = new mongoose.Schema({
@@ -28,7 +29,8 @@ const TaskSchema = new mongoose.Schema({
     },
     user: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
+        ref: "Reg",
+        required: true
     }
 }
 )

@@ -5,7 +5,7 @@ import Task from "../models/todomodel.js";
 export const addTask = async (req, res) => {
   const {head, item, category, status, startDate, endDate} = req.body;
   try{
-      const foundTask = await Task.findOne({user: req.userAuth._id})
+      const foundTask = await Task.findOne({item})
       if(!foundTask){
           const task = await Task.create({
             head,
@@ -14,7 +14,7 @@ export const addTask = async (req, res) => {
             status,
             startDate,
             endDate,
-            user: req.userAuth._id
+            user: req.userAuth
           })
           res.json({
               status: "success",
@@ -38,10 +38,11 @@ export const addTask = async (req, res) => {
 
 export const allTasks = async (req, res) => {
   try {
-    const tasks = await Task.find({ user: req.userAuth._id });
+    const tasks = await Task.find();
+    const userTasks = tasks.filter(task => task.user.toString() === req.userAuth._id.toString)
     res.json({
       status: "success",
-      data: tasks
+      data: userTasks
     });
   } catch (error) {
     console.log(error);

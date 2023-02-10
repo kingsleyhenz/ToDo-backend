@@ -39,14 +39,16 @@ export const addTask = async (req, res) => {
 export const allTasks = async (req, res) => {
   try {
     const tasks = await Task.find({ user: req.userAuth._id });
-    if (tasks.length > 0) {
-      res.json({ status: "success", data: tasks });
-    } else {
-      res.json({ status: "error", message: "No Tasks Found" });
-    }
+    res.json({
+      status: "success",
+      data: tasks
+    });
   } catch (error) {
     console.log(error);
-    res.json({ status: "error", message: "An error occured" });
+    res.json({
+      status: "error",
+      message: "An error occured while retrieving tasks"
+    });
   }
 };
 

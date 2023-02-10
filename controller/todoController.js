@@ -39,8 +39,7 @@ export const addTask = async (req, res) => {
 export const allTasks = async (req, res) => {
   try {
     const tasks = await Task.find();
-    const userTasks = tasks.filter(task => task.user == req.userAuth._id);
-
+    const userTasks = tasks.filter({user: req.userAuth._id});
     res.json({
       status: "success",
       data: userTasks

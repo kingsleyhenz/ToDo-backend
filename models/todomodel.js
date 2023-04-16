@@ -12,11 +12,13 @@ const TaskSchema = new mongoose.Schema({
     },  
     category:{
         type: String,
-        required:[true,"A Task Must Have A Category"]
+        required:[true,"A Task Must Have A Category"],
+        enum:["Crucial","Important"]
     },
     status :{
         type: String,
-        required:[true,"A Task Must Have A Status"]
+        required:[true,"A Task Must Have A Status"],
+        enum:["Completed", "Incomplete"]
     },
     startDate:{
         type: Date,

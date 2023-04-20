@@ -67,7 +67,7 @@ export const Login = async(req, res) => {
 export const getUser = async(req, res) => {
     try{
         console.log(req.userAuth);
-        const foundUser = await Users.findById(req.userAuth);
+        const foundUser = await Reg.findById(req.userAuth);
         if(foundUser){
             res.json({
                 status: "Success",
@@ -83,3 +83,27 @@ export const getUser = async(req, res) => {
         res.json(error.message)
     }
 }
+
+export const updateProfile = async (req, res) => {
+    try {
+      const { username, password } = req.body;
+      const user = await Reg.findById(req.userAuth);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      user.username = username || user.username;
+      if (password) {
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+        user.password = hashedPassword;
+      }
+      const updatedUser = await user.save();
+      res.json({
+        status: "success",
+        data: updatedUser,
+      });
+    } catch (error) {
+      console.error(`Error updating profile: ${error.message}`);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  };

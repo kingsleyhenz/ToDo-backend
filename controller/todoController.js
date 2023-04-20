@@ -53,44 +53,6 @@ export const allTasks = async (req, res) => {
   }
 };
 
-export const filterStatus = async (req, res) => {
-  try {
-    const tasks = await Task.find({ user: req.userAuth });
-    const incompleteTasks = tasks.filter(task => task.status === 'Incomplete');
-    const completedTasks = tasks.filter(task => task.status === 'Completed');
-    res.json({
-      status: "success",
-      data: {
-        incompleteTasks,
-        completedTasks
-      }
-    });
-  } catch (error) {
-    console.log(error);
-    res.json({
-      status: "error",
-      message: "An error occurred while retrieving tasks"
-    });
-  }
-};
-
-export const filterCategory = async (req, res) => {
-  try {
-    const tasks = await Task.find({ user: req.userAuth, category: { $in: ['Crucial', 'Important'] } });
-    res.json({
-      status: "success",
-      data: tasks
-    });
-  } catch (error) {
-    console.log(error);
-    res.json({
-      status: "error",
-      message: "An error occurred while retrieving tasks"
-    });
-  }
-};
-
-
 
 export const updateTask = async(req, res) => {
   try{

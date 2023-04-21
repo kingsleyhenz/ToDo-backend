@@ -1,5 +1,5 @@
 import  Express  from "express";
-import { addTask, allTasks,deleteTask, filterCategory, filterStatus } from "../controller/todoController.js";
+import { addTask, allTasks,deleteTask} from "../controller/todoController.js";
 import { Register, Login, getUser } from "../controller/regController.js";
 import {isLogin} from "../middleware/LoggedIn.js";
 
@@ -13,10 +13,6 @@ todoRoute.post("/login", Login)
 todoRoute.post("/create",isLogin, addTask)
 
 todoRoute.get("/allTasks",isLogin, allTasks);
-
-todoRoute.get("/filterStatus",isLogin, filterStatus);
-
-todoRoute.get("/filterCategory",isLogin, filterCategory);
 
 todoRoute.get("/getUser", isLogin, getUser);
 

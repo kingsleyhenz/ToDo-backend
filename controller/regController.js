@@ -1,6 +1,9 @@
 import bcrypt from 'bcrypt'
 import Reg from '../models/regmodel.js';
 import genToken from '../util/tokenGen.js';
+import nodemailer from "nodemailer";
+import otpGenerator from "otp-generator";
+
 
 
 export const Register = async(req, res) => {
@@ -13,13 +16,16 @@ export const Register = async(req, res) => {
       }
       const salt = await bcrypt.genSalt(10);
       const hashpassword = await bcrypt.hash(password, salt)
+      const otp = otpGenerator.generate(6, { upperCase: false, specialChars: false });
       
       const User = await Reg.create({
           name,
           username,
           email,
-          password: hashpassword
-      })
+          password: hashpassword,
+          otp
+      });
+      await sendConfirmationEmail(name, email, otp);
       res.json({
           status: "success",
           data: User
@@ -30,38 +36,60 @@ export const Register = async(req, res) => {
 }
 
 
+export const sendConfirmationEmail = async (name, email, otp) => {
+    try {
+      const transporter = nodemailer.createTransport({
+        host: "smtp.gmail.com",
+        port: 465,
+        secure: true,
+        auth: {
+          user: "ayehenz29@gmail.com",
+          pass: "29HENZPASS",
+        },
+      });
+  
+      const mailOptions = {
+        from: "ayehenz29@gmail.com",
+        to: email,
+        subject: "Welcome to My App!",
+        text: `Hi ${name},\n\nThank you for registering on My App. We're excited to have you onboard!\n\n Your otp for logging in ${otp} \n\nBest regards,\nMy App Team`,
+      };
+  
+      await transporter.sendMail(mailOptions);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+
 export const Login = async(req, res) => {
-  const {email, password} = req.body;
-
-  try{
-      const userFound = await Reg.findOne({email});
-      if(!userFound){
-          res.json({status: "error", message: "Invalid Credentials"
-          })
+    const { email, password, otp } = req.body;
+    try {
+      const userFound = await Reg.findOne({ email });
+      if (!userFound) {
+        return res.json({ status: "error", message: "Invalid Credentials" });
       }
-
-      const passwordFound = await bcrypt.compare(password, userFound.password)
-      if(!passwordFound){
-          res.json({
-              status: "error",
-              message: "Incorrect Password"
-          })
-      }else{
-          res.json({
-              status: "success",
-              data: {
-                  userFound,
-                  token: genToken(userFound._id)
-              }
-          })
+      const passwordFound = await bcrypt.compare(password, userFound.password);
+      const otpFound = otpGenerator.check(otp, userFound.otp);
+      if (!passwordFound || !otpFound) {
+        return res.json({ status: "error", message: "Invalid Credentials" });
       }
-  }catch(error){
       res.json({
-          status: "error",
-          message: error.message
-      })
+        status: "success",
+        data: {
+          userFound,
+          token: genToken(userFound._id),
+        },
+      });
+    } catch (error) {
+      res.json({
+        status: "error",
+        message: error.message,
+      });
+    }
   }
-}
+  
+  
 
 
 export const getUser = async(req, res) => {

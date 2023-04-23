@@ -62,33 +62,34 @@ export const sendConfirmationEmail = async (name, email, otp) => {
   };
 
 
+  
   export const Login = async(req, res) => {
-    const { email, password, otp } = req.body;
-    try {
-      const userFound = await Reg.findOne({ email });
-      if (!userFound) {
-        return res.json({ status: "error", message: "Invalid Credentials" });
-      }
-      const passwordFound = await bcrypt.compare(password, userFound.password);
-      const otpFound = otpVerify(userFound.otp, otp);
-      if (!passwordFound || !otpFound) {
-        return res.json({ status: "error", message: "Invalid Credentials" });
-      }
-      res.json({
-        status: "success",
-        data: {
-          userFound,
-          token: genToken(userFound._id),
-        },
-      });
-    } catch (error) {
-      res.json({
-        status: "error",
-        message: error.message,
-      });
+    const verifyOTP = otpVerify.create({crypto: require('crypto')});
+  const { email, password, otp } = req.body;
+  try {
+    const userFound = await Reg.findOne({ email });
+    if (!userFound) {
+      return res.json({ status: "error", message: "Invalid Credentials" });
     }
+    const passwordFound = await bcrypt.compare(password, userFound.password);
+    const otpFound = verifyOTP.check(userFound.otp, otp);
+    if (!passwordFound || !otpFound) {
+      return res.json({ status: "error", message: "Invalid Credentials" });
+    }
+    res.json({
+      status: "success",
+      data: {
+        userFound,
+        token: genToken(userFound._id),
+      },
+    });
+  } catch (error) {
+    res.json({
+      status: "error",
+      message: error.message,
+    });
   }
-
+}
   
 
 

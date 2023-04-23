@@ -4,6 +4,7 @@ import genToken from '../util/tokenGen.js';
 import nodemailer from "nodemailer";
 import otpGenerator from "otp-generator";
 
+const otpVerify = otpGenerator.check.bind(null, null);
 
 
 export const Register = async(req, res) => {
@@ -62,7 +63,7 @@ export const sendConfirmationEmail = async (name, email, otp) => {
   };
 
 
-export const Login = async(req, res) => {
+  export const Login = async(req, res) => {
     const { email, password, otp } = req.body;
     try {
       const userFound = await Reg.findOne({ email });
@@ -70,7 +71,7 @@ export const Login = async(req, res) => {
         return res.json({ status: "error", message: "Invalid Credentials" });
       }
       const passwordFound = await bcrypt.compare(password, userFound.password);
-      const otpFound = otpGenerator.check(otp, userFound.otp);
+      const otpFound = otpVerify(userFound.otp, otp);
       if (!passwordFound || !otpFound) {
         return res.json({ status: "error", message: "Invalid Credentials" });
       }
@@ -88,7 +89,7 @@ export const Login = async(req, res) => {
       });
     }
   }
-  
+
   
 
 

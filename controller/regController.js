@@ -3,8 +3,7 @@ import Reg from '../models/regmodel.js';
 import genToken from '../util/tokenGen.js';
 import nodemailer from "nodemailer";
 import otpGenerator from "otp-generator";
-
-const otpVerify = otpGenerator.check.bind(null, null);
+import otpVerify from "otp-verify"
 
 
 export const Register = async(req, res) => {

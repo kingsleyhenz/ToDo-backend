@@ -44,7 +44,7 @@ export const sendConfirmationEmail = async (name, email, otp) => {
         secure: true,
         auth: {
           user: "ayehenz29@gmail.com",
-          pass: "29HENZPASS",
+          pass: "xfkpqulivwwhwisc",
         },
       });
   

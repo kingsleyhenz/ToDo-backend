@@ -4,6 +4,7 @@ import genToken from '../util/tokenGen.js';
 import nodemailer from "nodemailer";
 import otpGenerator from "otp-generator";
 import otpVerify from "otp-verify"
+import crypto from 'crypto';
 
 
 export const Register = async(req, res) => {
@@ -62,25 +63,25 @@ export const sendConfirmationEmail = async (name, email, otp) => {
   };
 
 
-  
-  export const Login = async(req, res) => {
-    const verifyOTP = otpVerify.create({crypto: require('crypto')});
+export const Login = async (req, res) => {
   const { email, password, otp } = req.body;
   try {
-    const userFound = await Reg.findOne({ email });
-    if (!userFound) {
+    const user = await Reg.findOne({ email });
+    if (!user) {
       return res.json({ status: "error", message: "Invalid Credentials" });
     }
-    const passwordFound = await bcrypt.compare(password, userFound.password);
-    const otpFound = verifyOTP.check(userFound.otp, otp);
-    if (!passwordFound || !otpFound) {
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+    if (!isPasswordCorrect) {
       return res.json({ status: "error", message: "Invalid Credentials" });
+    }
+    if (user.otp !== otp) {
+      return res.json({ status: "error", message: "Invalid OTP" });
     }
     res.json({
       status: "success",
       data: {
-        userFound,
-        token: genToken(userFound._id),
+        user,
+        token: genToken(user._id),
       },
     });
   } catch (error) {
@@ -89,7 +90,8 @@ export const sendConfirmationEmail = async (name, email, otp) => {
       message: error.message,
     });
   }
-}
+};
+
   
 
 

@@ -3,8 +3,7 @@ import Reg from '../models/regmodel.js';
 import genToken from '../util/tokenGen.js';
 import nodemailer from "nodemailer";
 import otpGenerator from "otp-generator";
-import otpVerify from "otp-verify"
-import crypto from 'crypto';
+
 
 
 export const Register = async(req, res) => {
@@ -96,23 +95,27 @@ export const Login = async (req, res) => {
 
 
 export const getUser = async(req, res) => {
-    try{
-        console.log(req.userAuth);
-        const foundUser = await Reg.findById(req.userAuth);
-        if(foundUser){
-            res.json({
-                status: "Success",
-                data: {foundUser}
-            });
-        }else{
-            res.json({
-                status: "Success",
-                message: "User does not exist"
-            });
-        }
-    }catch(error){
-        res.json(error.message)
-    }
+  try{
+      const foundUser = await Reg.findById(req.userAuth);
+      if(foundUser){
+          const { name, username, email } = foundUser;
+          res.json({
+              status: "Success",
+              data: {
+                  name,
+                  username,
+                  email
+              }
+          });
+      } else {
+          res.json({
+              status: "Success",
+              message: "User does not exist"
+          });
+      }
+  } catch(error){
+      res.json(error.message)
+  }
 }
 
 export const updateProfile = async (req, res) => {

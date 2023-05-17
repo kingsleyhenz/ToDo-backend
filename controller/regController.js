@@ -7,22 +7,20 @@ import otpGenerator from "otp-generator";
 
 
 export const Register = async(req, res) => {
-  const{name, username, email} = req.body;
-
+  const{name, username, email } = req.body;
   try{
       const foundUser = await Reg.findOne({email});
       if(foundUser){
           return res.json({status: "error", data: "User Already Exists"})
       }
       const otp = otpGenerator.generate(6, { upperCase: false, specialChars: false });
-      
       const User = await Reg.create({
           name,
           username,
           email,
           password: otp,
       });
-      await sendConfirmationEmail(name, email, password);
+      await sendConfirmationEmail(name, email, otp);
       res.json({
           status: "success",
           data: User
@@ -33,7 +31,7 @@ export const Register = async(req, res) => {
 }
 
 
-export const sendConfirmationEmail = async (name, email, password) => {
+export const sendConfirmationEmail = async (name, email, otp) => {
     try {
       const transporter = nodemailer.createTransport({
         host: "smtp.gmail.com",
@@ -49,7 +47,7 @@ export const sendConfirmationEmail = async (name, email, password) => {
         from: "ayehenz29@gmail.com",
         to: email,
         subject: "Welcome to My App!",
-        text: `Hi ${name},\n\nThank you for registering on My App. We're excited to have you onboard!\n\n Your default password is ${password} you can always change your password after logging in \n\nBest regards,\nMy App Team`,
+        text: `Hi ${name},\n\nThank you for registering on My App. We're excited to have you onboard!\n\n Your default password is ${otp} you can always change your password after logging in \n\nBest regards,\nMy App Team`,
       };
   
       await transporter.sendMail(mailOptions);

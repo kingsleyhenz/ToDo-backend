@@ -21,7 +21,6 @@ const RegSchema = new mongoose.Schema({
       },
       otp:{
         type: String,
-        required: true,
       }
 },
 {

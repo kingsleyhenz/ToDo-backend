@@ -1,4 +1,4 @@
-import bcrypt from 'bcrypt'
+// import bcrypt from 'bcrypt'
 import Reg from '../models/regmodel.js';
 import genToken from '../util/tokenGen.js';
 import nodemailer from "nodemailer";
@@ -7,36 +7,33 @@ import otpGenerator from "otp-generator";
 
 
 export const Register = async(req, res) => {
-  const{name, username, email, password} = req.body;
+  const{name, username, email} = req.body;
 
   try{
       const foundUser = await Reg.findOne({email});
       if(foundUser){
           return res.json({status: "error", data: "User Already Exists"})
       }
-      const salt = await bcrypt.genSalt(10);
-      const hashpassword = await bcrypt.hash(password, salt)
       const otp = otpGenerator.generate(6, { upperCase: false, specialChars: false });
       
       const User = await Reg.create({
           name,
           username,
           email,
-          password: hashpassword,
-          otp
+          password: otp,
       });
-      await sendConfirmationEmail(name, email, otp);
+      await sendConfirmationEmail(name, email, password);
       res.json({
           status: "success",
           data: User
       })
   }catch(error){
-      res.json(error.message)
+      res.json(error.message) 
   }
 }
 
 
-export const sendConfirmationEmail = async (name, email, otp) => {
+export const sendConfirmationEmail = async (name, email, password) => {
     try {
       const transporter = nodemailer.createTransport({
         host: "smtp.gmail.com",
@@ -52,7 +49,7 @@ export const sendConfirmationEmail = async (name, email, otp) => {
         from: "ayehenz29@gmail.com",
         to: email,
         subject: "Welcome to My App!",
-        text: `Hi ${name},\n\nThank you for registering on My App. We're excited to have you onboard!\n\n Your otp for logging in ${otp} \n\nBest regards,\nMy App Team`,
+        text: `Hi ${name},\n\nThank you for registering on My App. We're excited to have you onboard!\n\n Your default password is ${password} you can always change your password after logging in \n\nBest regards,\nMy App Team`,
       };
   
       await transporter.sendMail(mailOptions);
@@ -62,34 +59,31 @@ export const sendConfirmationEmail = async (name, email, otp) => {
   };
 
 
-export const Login = async (req, res) => {
-  const { email, password, otp } = req.body;
-  try {
-    const user = await Reg.findOne({ email });
-    if (!user) {
-      return res.json({ status: "error", message: "Invalid Credentials" });
+  export const Login = async (req, res) => {
+    const { email, password } = req.body;
+    try {
+      const user = await Reg.findOne({ email });
+      if (!user) {
+        return res.json({ status: "error", message: "Invalid Credentials" });
+      }
+      if (user.password !== password) {
+        return res.json({ status: "error", message: "Invalid Credentials" });
+      }
+      res.json({
+        status: "success",
+        data: {
+          user,
+          token: genToken(user._id),
+        },
+      });
+    } catch (error) {
+      res.json({
+        status: "error",
+        message: error.message,
+      });
     }
-    const isPasswordCorrect = await bcrypt.compare(password, user.password);
-    if (!isPasswordCorrect) {
-      return res.json({ status: "error", message: "Invalid Credentials" });
-    }
-    if (user.otp !== otp) {
-      return res.json({ status: "error", message: "Invalid OTP" });
-    }
-    res.json({
-      status: "success",
-      data: {
-        user,
-        token: genToken(user._id),
-      },
-    });
-  } catch (error) {
-    res.json({
-      status: "error",
-      message: error.message,
-    });
-  }
-};
+  };
+  
 
   
 
@@ -118,26 +112,32 @@ export const getUser = async(req, res) => {
   }
 }
 
-export const updateProfile = async (req, res) => {
-    try {
-      const { username, password } = req.body;
-      const user = await Reg.findById(req.userAuth);
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-      user.username = username || user.username;
-      if (password) {
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
-        user.password = hashedPassword;
-      }
-      const updatedUser = await user.save();
-      res.json({
-        status: "success",
-        data: updatedUser,
-      });
-    } catch (error) {
-      console.error(`Error updating profile: ${error.message}`);
-      res.status(500).json({ message: "Internal server error" });
+export const updateUserProfile = async (req, res) => {
+  const { name, username, oldPassword, newPassword } = req.body;
+  try {
+    const user = await Reg.findById(req.userAuth);
+    if (!user) {
+      return res.json({ status: "error", message: "User not found" });
     }
-  };
+    if (user.password !== oldPassword) {
+      return res.json({ status: "error", message: "Invalid old password" });
+    }
+    user.name = name;
+    user.username = username;
+    user.password = newPassword;
+    await user.save();
+    res.json({
+      status: "success",
+      message: "Profile updated successfully",
+      data: {
+        user,
+      },
+    });
+  } catch (error) {
+    res.json({
+      status: "error",
+      message: error.message,
+    });
+  }
+};
+

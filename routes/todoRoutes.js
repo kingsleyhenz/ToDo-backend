@@ -21,7 +21,7 @@ todoRoute.get("/getUser", isLogin, getUser);
 
 todoRoute.patch("/updateUser", isLogin, updateUserProfile);
 
-todoRoute.delete("/:id", isLogin, deleteTask);
+todoRoute.delete("/deleteTask/:id", isLogin, deleteTask);
 
 
 

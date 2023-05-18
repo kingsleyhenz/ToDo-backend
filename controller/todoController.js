@@ -79,6 +79,36 @@ export const updateTask = async(req, res) => {
   }
 }
 
+export const completeTask = async (req, res) => {
+  const { taskId } = req.params;
+  try {
+    const task = await Task.findById(taskId);
+    if (!task) {
+      return res.json({
+        status: "error",
+        message: "Task not found",
+      });
+    }
+    if (task.status === "Completed") {
+      return res.json({
+        status: "error",
+        message: "Task is already completed",
+      });
+    }
+    task.status = "Completed";
+    await task.save();
+    return res.json({
+      status: "success",
+      message: "Task completed successfully",
+    });
+  } catch (error) {
+    return res.json({
+      status: "error",
+      message: error.message,
+    });
+  }
+};
+
 
 export const deleteTask = async(req, res) => {
   try{
@@ -87,7 +117,6 @@ export const deleteTask = async(req, res) => {
          status: "success",
          message: "Deleted Successfully"
      })
-
   }catch(error){
      res.json({
          status: "error",

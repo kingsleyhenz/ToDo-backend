@@ -19,7 +19,7 @@ todoRoute.patch("/completeTask/:taskId",isLogin, completeTask);
 
 todoRoute.get("/getUser", isLogin, getUser);
 
-todoRoute.patch("/updateUser", isLogin, updateUserProfile);
+todoRoute.patch("/updateUser/:id", isLogin, updateUserProfile);
 
 todoRoute.delete("/deleteTask/:id", isLogin, deleteTask);
 

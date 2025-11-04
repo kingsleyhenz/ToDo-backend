@@ -13,7 +13,7 @@ const TaskSchema = new mongoose.Schema({
     category:{
         type: String,
         required:[true,"A Task Must Have A Category"],
-        enum:["Crucial","Important"]
+        enum:["Crucial","Personal","Work",]
     },
     status :{
         type: String,

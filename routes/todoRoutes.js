@@ -15,7 +15,7 @@ todoRoute.post("/create",isLogin, addTask);
 
 todoRoute.get("/allTasks",isLogin, allTasks);
 
-todoRoute.patch("/completeTask/:taskId",isLogin, completeTask);
+todoRoute.patch("/completeTask/:id",isLogin, completeTask);
 
 todoRoute.get("/getUser", isLogin, getUser);
 

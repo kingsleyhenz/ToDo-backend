@@ -1,33 +1,50 @@
 import mongoose, { Document, Schema } from "mongoose";
+import { TaskStatus, PriorityLevel } from "../types/enums";
 
 export interface ITask extends Document {
-  head: string;
-  item: string;
-  category: "Crucial" | "Personal" | "Work";
-  status: "Completed" | "Incomplete";
+  title: string;
+  description: string;
+  category: mongoose.Types.ObjectId;
+  status: TaskStatus;
+  priorityLevel: PriorityLevel;
+  progress: number;
   startDate?: Date;
   endDate?: Date;
   user: mongoose.Types.ObjectId;
 }
 
 const TaskSchema: Schema = new mongoose.Schema({
-  head: {
+  title: {
     type: String,
-    required: true
+    required: [true, "Task title is required"]
   },
-  item: {
+  description: {
     type: String,
-    required: true
+    required: [true, "Task description is required"]
   },
   category: {
-    type: String,
-    required: [true, "A Task Must Have A Category"],
-    enum: ["Crucial", "Personal", "Work"]
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Category",
+    required: [true, "A Task Must Have A Category"]
   },
   status: {
     type: String,
     required: [true, "A Task Must Have A Status"],
-    enum: ["Completed", "Incomplete"]
+    enum: Object.values(TaskStatus),
+    default: TaskStatus.INCOMPLETE
+  },
+  priorityLevel: {
+    type: String,
+    required: [true, "A Task Must Have A Priority"],
+    enum: Object.values(PriorityLevel),
+    default: PriorityLevel.MEDIUM
+  },
+  progress: {
+    type: Number,
+    required: true,
+    min: 0,
+    max: 100,
+    default: 0
   },
   startDate: {
     type: Date,
@@ -39,7 +56,8 @@ const TaskSchema: Schema = new mongoose.Schema({
   },
   user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Register"
+    ref: "User",
+    required: true
   }
 },
 {

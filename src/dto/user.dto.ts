@@ -14,6 +14,21 @@ export class RegisterDto {
   email!: string;
 }
 
+export class CreatePasswordDto {
+  @IsEmail()
+  @IsNotEmpty()
+  email!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  otp!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(6)
+  newPassword!: string;
+}
+
 export class LoginDto {
   @IsEmail()
   @IsNotEmpty()

@@ -1,6 +1,6 @@
 import mongoose, { Document, Schema } from "mongoose";
 
-export interface IReg extends Document {
+export interface IUser extends Document {
   name: string;
   username: string;
   email: string;
@@ -10,7 +10,7 @@ export interface IReg extends Document {
   updatedAt: Date;
 }
 
-const RegSchema: Schema = new mongoose.Schema({
+const UserSchema: Schema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
@@ -37,6 +37,6 @@ const RegSchema: Schema = new mongoose.Schema({
   toJSON: { virtuals: true }
 });
 
-const Reg = mongoose.model<IReg>("Register", RegSchema);
+const User = mongoose.model<IUser>("User", UserSchema);
 
-export default Reg;
+export default User;

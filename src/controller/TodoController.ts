@@ -84,6 +84,16 @@ export const getCategories = async (req: Request, res: Response, next: NextFunct
   }
 };
 
+export const updateCategory = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    // @ts-ignore
+    const category = await TodoService.updateCategory(req.params.id, req.body.name, req.userAuth);
+    res.status(200).json({ status: "success", data: category });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const deleteCategory = async (req: Request, res: Response, next: NextFunction) => {
   try {
     // @ts-ignore

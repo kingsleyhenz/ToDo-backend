@@ -17,6 +17,7 @@ taskRouter.delete('/deleteTask/:id', isLogin, TodoController.deleteTask);
 // Category Routes
 taskRouter.post('/category', isLogin, validationMiddleware(CreateCategoryDto), TodoController.addCategory);
 taskRouter.get('/categories', isLogin, TodoController.getCategories);
+taskRouter.patch('/category/:id', isLogin, validationMiddleware(CreateCategoryDto), TodoController.updateCategory);
 taskRouter.delete('/category/:id', isLogin, TodoController.deleteCategory);
 
 export default taskRouter;

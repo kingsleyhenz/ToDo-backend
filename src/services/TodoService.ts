@@ -16,6 +16,16 @@ class TodoService {
     return await Category.find({ user: userId });
   }
 
+  async updateCategory(categoryId: string, name: string, userId: string) {
+    const updated = await Category.findOneAndUpdate(
+      { _id: categoryId, user: userId },
+      { $set: { name } },
+      { new: true }
+    );
+    if (!updated) throw new AppError("Category not found or unauthorized", 404);
+    return updated;
+  }
+
   async deleteCategory(categoryId: string, userId: string) {
     const deleted = await Category.findOneAndDelete({ _id: categoryId, user: userId });
     if (!deleted) throw new AppError("Category not found or unauthorized", 404);

@@ -1,8 +1,10 @@
-import express  from 'express';
-import dotenv from 'dotenv'
-import cors from 'cors'
-import { dbConnect } from './config/dbConnect.js';
-import todoRoute from './routes/todoRoutes.js';
+import 'reflect-metadata';
+import express from 'express';
+import dotenv from 'dotenv';
+import cors from 'cors';
+import { dbConnect } from './config/dbConnect';
+import routes from './routes/index';
+import { errorHandler } from './error/errorHandler';
 dotenv.config();
 dbConnect();
 const app = express();
@@ -19,7 +21,8 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(express.json());
-app.use("/api/v1/task", todoRoute)
+app.use("/api/v1", routes)
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 10000
-app.listen(PORT,console.log(`Server is running at ${PORT}`))
+app.listen(PORT, () => console.log(`Server is running at ${PORT}`));

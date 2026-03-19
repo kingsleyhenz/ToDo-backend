@@ -2,16 +2,19 @@
   "name": "server",
   "version": "1.0.0",
   "description": "ToDo Task",
-  "main": "index.js",
+  "main": "src/index.ts",
   "type": "module",
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "nodemon --exec tsx src/index.ts",
+    "build": "tsc"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.1.0",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.15.1",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
@@ -20,6 +23,18 @@
     "nodemailer": "^6.9.1",
     "nodemon": "^2.0.20",
     "otp-generator": "^4.0.1",
-    "otp-verify": "^1.0.5"
+    "otp-verify": "^1.0.5",
+    "reflect-metadata": "^0.2.2"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^25.5.0",
+    "@types/nodemailer": "^7.0.11",
+    "@types/otp-generator": "^4.0.2",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
   }
 }

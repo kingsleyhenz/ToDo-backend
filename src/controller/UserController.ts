@@ -47,3 +47,13 @@ export const updateProfile = async (req: Request, res: Response, next: NextFunct
     next(error);
   }
 };
+
+export const updatePassword = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    // @ts-ignore
+    const result = await UserService.updatePassword(req.userAuth, req.body);
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};

@@ -1,4 +1,5 @@
 import User from '../models/usermodel';
+import Task from '../models/todomodel';
 import genToken from '../util/tokenGen';
 import nodemailer from "nodemailer";
 import bcrypt from 'bcrypt';

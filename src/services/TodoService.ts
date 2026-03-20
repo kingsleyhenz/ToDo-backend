@@ -168,6 +168,65 @@ class TodoService {
       year: selectedYear
     };
   }
+
+  async getProgression(userId: string, from?: string, to?: string) {
+    let dateFilter: any = {};
+    if (from && to) {
+      dateFilter = {
+        createdAt: {
+          $gte: new Date(from),
+          $lte: new Date(to)
+        }
+      };
+    }
+
+    const tasks = await Task.find({ user: userId, ...dateFilter });
+
+    let totalCompleted = 0;
+    let totalPending = 0;
+    let totalIncomplete = 0;
+    let totalProgress = 0;
+    
+    let priorityBreakdown = {
+      High: 0,
+      Medium: 0,
+      Low: 0
+    };
+
+    tasks.forEach(task => {
+        if (task.status === TaskStatus.COMPLETED) {
+          totalCompleted++;
+        } else if (task.status === TaskStatus.ONGOING) {
+          totalPending++;
+        } else {
+          totalIncomplete++;
+        }
+        
+        totalProgress += task.progress || 0;
+
+        if (task.priorityLevel === "High") priorityBreakdown.High++;
+        else if (task.priorityLevel === "Medium") priorityBreakdown.Medium++;
+        else priorityBreakdown.Low++; // assuming Low
+    });
+
+    const totalTasks = tasks.length;
+    const avgProgress = totalTasks > 0 ? Math.round(totalProgress / totalTasks) : 0;
+
+    const percentages = {
+      completed: totalTasks > 0 ? Math.round((totalCompleted / totalTasks) * 100) : 0,
+      ongoing: totalTasks > 0 ? Math.round((totalPending / totalTasks) * 100) : 0,
+      incomplete: totalTasks > 0 ? Math.round((totalIncomplete / totalTasks) * 100) : 0,
+    };
+
+    return {
+      totalCompleted,
+      totalPending,
+      totalIncomplete,
+      avgProgress,
+      percentages,
+      priorityBreakdown
+    };
+  }
 }
 
 export default new TodoService();

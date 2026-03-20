@@ -63,6 +63,19 @@ export const getStats = async (req: Request, res: Response, next: NextFunction) 
   }
 };
 
+export const getProgression = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const from = req.query.from as string | undefined;
+    const to = req.query.to as string | undefined;
+    
+    // @ts-ignore
+    const data = await TodoService.getProgression(req.userAuth, from, to);
+    res.status(200).json({ status: "success", data });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // Category Controllers
 export const addCategory = async (req: Request, res: Response, next: NextFunction) => {
   try {

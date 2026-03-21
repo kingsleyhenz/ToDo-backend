@@ -55,26 +55,41 @@ class UserService {
   }
 
   async getUserById(userId: string) {
-    const foundUser = await User.findById(userId);
+    // using lean so we can modify the object easily
+    const foundUser = await User.findById(userId).lean();
     if (!foundUser) throw new AppError("User does not exist", 404);
-    return foundUser;
+    
+    // Fetch all user's tasks
+    const tasks = await Task.find({ user: userId }).populate('category', 'name');
+    
+    return { ...foundUser, tasks };
   }
 
   async updateProfile(userId: string, updateData: any) {
-    const { name, username, oldPassword, newPassword } = updateData;
+    const { name, username } = updateData;
     const user = await User.findById(userId);
     if (!user) throw new AppError("User not found", 404);
 
-    const isMatch = await bcrypt.compare(oldPassword, user.password);
-    if (!isMatch) throw new AppError("Invalid old password", 401);
-
-    const salt = await bcrypt.genSalt(10);
-    user.password = await bcrypt.hash(newPassword, salt);
-    user.name = name;
-    user.username = username;
+    if (name) user.name = name;
+    if (username) user.username = username;
     
     await user.save();
     return user;
+  }
+
+  async updatePassword(userId: string, payload: any) {
+    const { currentPassword, newPassword } = payload;
+    const user = await User.findById(userId);
+    if (!user) throw new AppError("User not found", 404);
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) throw new AppError("Invalid current password", 401);
+
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(newPassword, salt);
+    
+    await user.save();
+    return { message: "Password updated successfully" };
   }
 
   async sendConfirmationEmail(name: string, email: string, otp: string) {

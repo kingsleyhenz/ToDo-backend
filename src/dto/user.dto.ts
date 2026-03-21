@@ -57,3 +57,14 @@ export class UpdateUserDto {
   @MinLength(6)
   newPassword!: string;
 }
+
+export class UpdatePasswordDto {
+  @IsString()
+  @IsNotEmpty()
+  currentPassword!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(6)
+  newPassword!: string;
+}
